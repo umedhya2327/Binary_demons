@@ -17,7 +17,7 @@ import java.awt.*;
 /**
  * Binary_Demons - a robot by (your name here)
  */
-public class Binary_Demons extends CharlieBot
+public class Binary_demons extends CharlieBot
 {
 
 int dist = 30;
