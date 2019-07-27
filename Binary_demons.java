@@ -1,5 +1,5 @@
 
-//package Binary_demons;
+//package Binary_Demons;
 import robocode.*;
 
 import robocode.Robot;
@@ -17,135 +17,188 @@ import java.awt.*;
 /**
  * Binary_Demons - a robot by (your name here)
  */
-public class Binary_demons extends BravoBot
+public class Binary_Demons extends CharlieBot
 {
-	int turnDirection = 1;
-int dist = 50;
-int trigger; 
-boolean peek; // Don't turn if there's a robot there
-	double moveAmount; // How much to move
+
+int dist = 30;
+	/**
+	 * run: Binary_Demons's default behavior
+	 */
+	/*public void run() {
+		// Initialization of the robot should be put here
+	
+	
+		setAdjustGunForRobotTurn(true);
+	
+		// After trying out your robot, try uncommenting the import at the top,
+		// and the next line:
+
+		// setColors(Color.red,Color.blue,Color.green); // body,gun,radar
+		setBodyColor(new Color(22, 160, 133));
+		setBulletColor(new Color(255, 255, 100));
+		setScanColor(Color.green);
+		setGunColor(Color.pink);
+
+		// Robot main loop
+		while(true) {
+			// Replace the next 4 lines with any behavior you would like
+			ahead(50000);
+			
+			turnGunRight(360);
+			back(5000);
+			turnGunRight(360);
+		
+			
+		
+		}
+	/*	while (true) {
+			// Tell the game we will want to move ahead 40000 -- some large number
+			setAhead(40000);
+			movingForward = true;
+			// Tell the game we will want to turn right 90
+			setTurnRight(90);
+			waitFor(new TurnCompleteCondition(this));
+			// Note:  We are still moving ahead now, but the turn is complete.
+			// Now we'll turn the other way...
+			setTurnLeft(180);
+			// ... and wait for the turn to finish ...
+			waitFor(new TurnCompleteCondition(this));
+			// ... then the other way ...
+			setTurnRight(180);
+			// .. and wait for that turn to finish.
+			waitFor(new TurnCompleteCondition(this));
+			// then back to the top to do it all again
+		}*/
+	//}
 
 	/**
-	 * run: Move around the walls
+	 * onScannedRobot: What to do when you see another robot
 	 */
-	public void run() {
-	
-		setBodyColor(Color.red);
-		setGunColor(Color.orange);
-		setRadarColor(Color.black);	
-		
-		turnGunRight(90);
-		turnRight(90);
-		while (true) {
-			turnRight(5 * turnDirection);
-		}	
+/*	public void onScannedRobot(ScannedRobotEvent e) {
+		// Replace the next line with any behavior you would like
+		double absoluteBearing = getHeading() + e.getBearing();
+		double bearingFromGun = normalRelativeAngleDegrees(absoluteBearing - getGunHeading());
 
+		// If it's close enough, fire!
+		if (Math.abs(bearingFromGun) <= 3) {
+			turnGunRight(bearingFromGun);
+			// We check gun heat here, because calling fire()
+			// uses a turn, which could cause us to lose track
+			// of the other robot.
+			if (getGunHeat() == 0) {
+				fire(Math.min(3 - Math.abs(bearingFromGun), getEnergy() - .1));
+			}
+			//run1();
+		} // otherwise just set the gun to turn.
+		// Note:  This will have no effect until we call scan()
+		else {
+			turnGunRight(bearingFromGun);
+		}
+		// Generates another scan event if we see a robot.
+		// We only need to call this if the gun (and therefore radar)
+		// are not turning.  Otherwise, scan is called automatically.
+		if (bearingFromGun == 0) {
+			scan();
+		}
 	}
 
 	/**
-	 * onHitRobot:  Move away a bit.
+	 * onHitByBullet: What to do when you're hit by a bullet
 	 */
-public void onHitByBullet(HitByBulletEvent e) {
-		turnRight(normalRelativeAngleDegrees(90 - (getHeading() - e.getHeading())));
+	public void onHitByBullet(HitByBulletEvent e) {
+		// Replace the next line with any behavior you would like
+		turnRight(normalRelativeAngleDegrees(90 + (getHeading() - e.getHeading())));
 
 		ahead(dist);
 		dist *= -1;
 		scan();
-	}
-
-	/**
-	 * onHitRobot:  Aim at it.  Fire Hard!
-	 */
-	public void onHitRobot(HitRobotEvent e) {
-		if (e.getBearing() >= 0) {
-			turnDirection = 1;
-		} else {
-			turnDirection = -1;
-		}
-		turnRight(e.getBearing());
-
-		// Determine a shot that won't kill the robot...
-		// We want to ram him instead for bonus points
-		if (e.getEnergy() > 16) {
-			fire(10);
-		} else if (e.getEnergy() > 10) {
-			fire(8);
-		} else if (e.getEnergy() > 4) {
-			fire(6);
-		} else if (e.getEnergy() > 2) {
-			fire(1);
-		} else if (e.getEnergy() > .4) {
-			fire(.5);
-		}
-		ahead(20);
-	}
-
-	/**
-	 * onScannedRobot:  Fire!
-	 */
-public void onScannedRobot(ScannedRobotEvent e) {
-		// Calculate exact location of the robot
-
-	if (e.getBearing() >= 0 || (e.getDistance() < 100 && getEnergy() > 50)) {
-			turnDirection = 45;
-			fire(5);
-		} else {
-			turnDirection = -45;
-			fire(2);
-		}
-
-		turnRight(e.getBearing());
-		ahead(e.getDistance() + 20);
-		scan();
 		
-	/*	if (trackName != null && !e.getName().equals(trackName)) {
-			return;
-		}
-
-		// If we don't have a target, well, now we do!
-		if (trackName == null) {
-			trackName = e.getName();
-			out.println("Tracking " + trackName);
-		}
-		// This is our target.  Reset count (see the run method)
-		count = 0;
-		// If our target is too far away, turn and move toward it.
-		if (e.getDistance() > 150) {
-			gunTurnAmt = normalRelativeAngleDegrees(e.getBearing() + (getHeading() - getRadarHeading()));
-
-			turnGunRight(gunTurnAmt); // Try changing these to setTurnGunRight,
-			turnRight(e.getBearing()); // and see how much Tracker improves...
-			// (you'll have to make Tracker an AdvancedRobot)
-			ahead(e.getDistance() - 140);
-			return;
-		}
-
-		// Our target is close.
-		gunTurnAmt = normalRelativeAngleDegrees(e.getBearing() + (getHeading() - getRadarHeading()));
-		turnGunRight(gunTurnAmt);
-		fire(3);
-
-		// Our target is too close!  Back up.
-		if (e.getDistance() < 100) {
-			if (e.getBearing() > -90 && e.getBearing() <= 90) {
-				back(40);
-			} else {
-				ahead(40);
-			}
-		}
-		scan();*/
 	}
 	
-	public void onCustomEvent(CustomEvent e) {
-		// If our custom event "triggerhit" went off,
-		if (e.getCondition().getName().equals("triggerhit")) {
-			// Adjust the trigger value, or
-			// else the event will fire again and again and again...
-			trigger -= 20;
-			out.println("Ouch, down to " + (int) (getEnergy() + .5) + " energy.");
-			// move around a bit.
-			turnLeft(75);
-			ahead(100);
+	/**
+	 * onHitWall: What to do when you hit a wall
+	 */
+	public void onHitWall(HitWallEvent e) {
+		// Replace the next line with any behavior you would like
+		back(20);
+	}	
+	
+	public void onWin(WinEvent e) {
+		// Victory dance
+		turnRight(180);
+	}
+	
+public void onHitRobot(HitRobotEvent e) {
+		double turnGunAmt = normalRelativeAngleDegrees(e.getBearing() + getHeading() - getGunHeading());
+		int turnDirection = 1;
+		//turnRight(5 * turnDirection);
+		turnGunRight(turnGunAmt);
+		fire(3);
+	}
+	
+public void smartFire(double robotDistance) {
+		if (robotDistance > 50 || getEnergy() < 15) {
+			fire(2);
+		} else if (robotDistance > 30) {
+			fire(3);
+		} else {
+			fire(3);
 		}
 	}
+public void run(){
+		// Set colors
+		boolean peek; // Don't turn if there's a robot there
+		double moveAmount; // How much to move
+		setBodyColor(Color.black);
+		setGunColor(Color.black);
+		setRadarColor(Color.orange);
+		setBulletColor(Color.cyan);
+		setScanColor(Color.cyan);
+
+		// Initialize moveAmount to the maximum possible for this battlefield.
+		moveAmount = Math.max(getBattleFieldWidth(), getBattleFieldHeight());
+		// Initialize peek to false
+		peek = false;
+
+		// turnLeft to face a wall.
+		// getHeading() % 90 means the remainder of
+		// getHeading() divided by 90.
+		turnLeft(getHeading() % 90);
+		ahead(moveAmount);
+		// Turn the gun to turn right 90 degrees.
+		peek = true;
+		turnGunRight(-180);
+		//turnRight(180);
+
+		while (true) {
+			// Look before we turn when ahead() completes.
+			peek = true;
+			// Move up the wall
+			ahead(moveAmount);
+			// Don't look now
+			peek = false;
+			// Turn to the next wall
+		
+			turnLeft(180);
+		}
+	}
+	public void onRobotDetected(ScannedRobotEvent e) {
+
+				boolean peek;
+				peek = false;
+			fire(2);
+			// Note that scan is called automatically when the robot is moving.
+			// By calling it manually here, we make sure we generate another scan event if there's a robot on the next
+			// wall, so that we do not start moving up it until it's gone.
+		
+				
+				scan();
+				
+				
+			
+		
+	}
+
+
+		
 }
