@@ -1,4 +1,3 @@
-
 //package Binary_Demons;
 import robocode.*;
 
@@ -168,7 +167,7 @@ public void run(){
 		// Turn the gun to turn right 90 degrees.
 		peek = true;
 		turnGunRight(-180);
-		//turnRight(180);
+		turnRight(180);
 
 		while (true) {
 			// Look before we turn when ahead() completes.
@@ -186,14 +185,22 @@ public void run(){
 
 				boolean peek;
 				peek = false;
-			fire(2);
+			if(!peek)
+			{
+				//turnGunRight(180);
+				fire(2);
+			}
+				
+		
 			// Note that scan is called automatically when the robot is moving.
 			// By calling it manually here, we make sure we generate another scan event if there's a robot on the next
 			// wall, so that we do not start moving up it until it's gone.
-		
+			if(peek){
 				
 				scan();
-				
+				turnGunRight(180);
+				//fire(2);
+			}	
 				
 			
 		
